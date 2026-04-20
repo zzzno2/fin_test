@@ -1,0 +1,27 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 50px;
+}
+
+#word {
+    font-weight: bold;
+    font-size: 24px;
+}
+
+#input {
+    padding: 10px;
+    font-size: 18px;
+    margin: 20px;
+}
+
+#result {
+    font-size: 20px;
+    margin-top: 20px;
+}
+
+#correct-answer {
+    font-size: 18px;
+    margin-top: 10px;
+    color: #333;
+}

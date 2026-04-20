@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Угадай перевод</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <div id="stats">
+        <div id="counter">0 / 103</div>
+        <div id="missed"><span id="wrong-count">0</span></div>
+    </div>
+    <h1>Угадай перевод финского слова</h1>
+    <p>Вопрос <span id="current">1</span> из <span id="total"></span></p>
+    <p>Финское слово: <span id="word"></span></p>
+    <input type="text" id="input" placeholder="Введите перевод и нажмите Enter">
+    <div id="result"></div>
+    <div id="history"></div>
+    <script src="main.js"></script>
+</body>
+</html>
