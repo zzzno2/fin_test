@@ -15,7 +15,7 @@ const finnishRussianWords = [
   {finnish: "te", russian: ["вы", "вас", "вам"]},
   {finnish: "he", russian: ["они", "им"]},
   {finnish: "mies", russian: ["мужчина", "муж", "человек"]},
-  {finnish: "nainen", russian: ["женщина", "дама", "женщина"]},
+  {finnish: "nainen", russian: ["женщина", "дама"]},
   {finnish: "lapsi", russian: ["ребенок", "малыш", "дитя"]},
   {finnish: "poika", russian: ["мальчик", "сын"]},
   {finnish: "tyttö", russian: ["девочка", "дочь"]},
@@ -24,7 +24,7 @@ const finnishRussianWords = [
   {finnish: "äiti", russian: ["мама", "мать", "мамочка"]},
   {finnish: "veli", russian: ["брат", "братишка"]},
   {finnish: "sisko", russian: ["сестра", "сестричка"]},
-  {finnish: "koti", russian: ["дом", "жилище", "домик", "квартира", "жилище"]},
+  {finnish: "koti", russian: ["дом", "жилище", "домик", "квартира"]},
   {finnish: "huone", russian: ["комната", "помещение", "номер"]},
   {finnish: "keittiö", russian: ["кухня", "кухонная"]},
   {finnish: "makuuhuone", russian: ["спальня", "комната для сна"]},
@@ -38,7 +38,7 @@ const finnishRussianWords = [
   {finnish: "ruoka", russian: ["еда", "пища", "блюдо"]},
   {finnish: "juoma", russian: ["напиток", "жидкость", "питье"]},
   {finnish: "vesi", russian: ["вода", "водичка"]},
-  {finnish: "leipa", russian: ["хлеб", "буханка"]},
+  {finnish: "leipä", russian: ["хлеб", "буханка"]}, // исправлено
   {finnish: "liha", russian: ["мясо", "мясное"]},
   {finnish: "kala", russian: ["рыба", "рыбка"]},
   {finnish: "kana", russian: ["курица", "цыпленок"]},
@@ -50,9 +50,9 @@ const finnishRussianWords = [
   {finnish: "peruna", russian: ["картофель", "картошка"]},
   {finnish: "tomaatti", russian: ["помидор", "томат"]},
   {finnish: "sipuli", russian: ["лук", "репчатый лук"]},
-  {finnish: "maistraatti", russian: ["молоко", "молочный"]},
+  {finnish: "maito", russian: ["молоко", "молочный"]}, // исправлено
   {finnish: "juusto", russian: ["сыр", "сырок"]},
-  {finnish: "vooi", russian: ["масло", "сливочное масло"]},
+  {finnish: "voi", russian: ["масло", "сливочное масло"]}, // исправлено
   {finnish: "kananmuna", russian: ["яйцо", "яичко"]},
   {finnish: "kahvi", russian: ["кофе", "кофейный"]},
   {finnish: "tee", russian: ["чай", "чайный"]},
@@ -99,25 +99,14 @@ const finnishRussianWords = [
   {finnish: "iso", russian: ["большой", "огромный", "великий"]},
   {finnish: "pieni", russian: ["маленький", "небольшой"]},
   {finnish: "hyvä", russian: ["хороший", "отличный", "прекрасный"]},
-  {finnish: "paha", russian: ["плохой", "дурной", "злой"]},
+  {finnish: "paha", russian: ["плохой", "дурной"]},
   {finnish: "kaunis", russian: ["красивый", "прекрасный", "симпатичный"]},
-  {finnish: "ruma", russian: ["уродливый", "непривлекательный"]},
+  {finnish: "ruma", russian: ["уродливый", "урод", "непривлекательный"]},
   {finnish: "nopea", russian: ["быстрый", "скорый", "шустрый"]},
   {finnish: "hidas", russian: ["медленный", "тугой"]},
   {finnish: "numero", russian: ["номер", "число", "цифра"]},
-  {finnish: "yksi", russian: ["один", "1"]},
-  {finnish: "kaksi", russian: ["два", "2"]},
-  {finnish: "kolme", russian: ["три", "3"]},
-  {finnish: "neljä", russian: ["четыре", "4"]},
-  {finnish: "viisi", russian: ["пять", "5"]}
 ];
 
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
 
 function normalizeTranslations(words) {
   for (const item of words) {
@@ -127,60 +116,12 @@ function normalizeTranslations(words) {
   }
 }
 
-function levenshteinDistance(a, b) {
-  const matrix = [];
-  for (let i = 0; i <= b.length; i++) {
-    matrix[i] = [i];
-  }
-  for (let j = 0; j <= a.length; j++) {
-    matrix[0][j] = j;
-  }
-  for (let i = 1; i <= b.length; i++) {
-    for (let j = 1; j <= a.length; j++) {
-      if (b[i - 1] === a[j - 1]) {
-        matrix[i][j] = matrix[i - 1][j - 1];
-      } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j] + 1
-        );
-      }
-    }
-  }
-  return matrix[b.length][a.length];
-}
-
-function similarity(a, b) {
-  const lowerA = a.toLowerCase();
-  const lowerB = b.toLowerCase();
-  if (lowerA.length < lowerB.length - 1) return 0;
-  let matches = 0;
-  for (let char of lowerA) {
-    if (lowerB.includes(char)) {
-      matches++;
-    }
-  }
-  return lowerA.length === 0 ? 1 : matches / lowerA.length;
-}
-
-function hasTypo(userAnswer, answers) {
-  const answerLower = userAnswer.toLowerCase();
-  return answers.some((answer) => {
-    const sim = similarity(answerLower, answer.toLowerCase());
-    return sim >= 0.6 && sim < 0.8;
-  });
-}
-
-function hasCloseMatch(userAnswer, answers) {
-  const answerLower = userAnswer.toLowerCase();
-  return answers.some((answer) => similarity(answerLower, answer.toLowerCase()) >= 0.7);
-}
-
 normalizeTranslations(finnishRussianWords);
-shuffleArray(finnishRussianWords);
 
-let currentIndex = 0;
+// 👉 новый массив без повторов
+const remainingWords = [...finnishRussianWords];
+
+let currentWord = null;
 let correctCount = 0;
 let wrongCount = 0;
 let attempts = 3;
@@ -198,114 +139,97 @@ totalElement.textContent = finnishRussianWords.length;
 counterElement.textContent = `${correctCount} / ${finnishRussianWords.length}`;
 wrongCountElement.textContent = wrongCount;
 
-let canSubmit = true;
+function getRandomWord() {
+  const index = Math.floor(Math.random() * remainingWords.length);
+  return remainingWords.splice(index, 1)[0];
+}
+
+function similarity(a, b) {
+  const lowerA = a.toLowerCase();
+  const lowerB = b.toLowerCase();
+  if (lowerA.length < lowerB.length - 1) return 0;
+  let matches = 0;
+  for (let char of lowerA) {
+    if (lowerB.includes(char)) matches++;
+  }
+  return lowerA.length === 0 ? 1 : matches / lowerA.length;
+}
+
+function hasTypo(userAnswer, answers) {
+  return answers.some(answer => {
+    const sim = similarity(userAnswer, answer);
+    return sim >= 0.6 && sim < 0.8;
+  });
+}
+
+function hasCloseMatch(userAnswer, answers) {
+  return answers.some(answer => similarity(userAnswer, answer) >= 0.7);
+}
 
 function showCurrentWord() {
-  if (currentIndex >= finnishRussianWords.length) {
+  if (remainingWords.length === 0) {
     resultElement.textContent = `Все слова пройдены! Правильных ответов: ${correctCount} из ${finnishRussianWords.length}`;
     resultElement.style.color = "blue";
     wordElement.textContent = "";
     return;
   }
 
-  wordElement.textContent = finnishRussianWords[currentIndex].finnish;
-  currentElement.textContent = currentIndex + 1;
+  currentWord = getRandomWord();
+
+  wordElement.textContent = currentWord.finnish;
+  currentElement.textContent = finnishRussianWords.length - remainingWords.length;
+
   inputElement.value = '';
   resultElement.textContent = '';
   historyElement.innerHTML = '';
   attempts = 3;
-  canSubmit = true;
 }
 
 showCurrentWord();
 
 inputElement.addEventListener('keydown', (event) => {
   if (event.key !== 'Enter') return;
-  if (!canSubmit) return;
 
   const userAnswer = inputElement.value.trim().toLowerCase();
-  const correctAnswers = finnishRussianWords[currentIndex].russian.map(answer => answer.toLowerCase());
+  const correctAnswers = currentWord.russian.map(a => a.toLowerCase());
 
-  if (correctAnswers.includes(userAnswer)) {
+  if (correctAnswers.includes(userAnswer) || hasCloseMatch(userAnswer, correctAnswers)) {
     resultElement.textContent = "верно";
     resultElement.style.color = "green";
+
     correctCount++;
     counterElement.textContent = `${correctCount} / ${finnishRussianWords.length}`;
-    currentIndex++;
 
-    if (currentIndex < finnishRussianWords.length) {
-      setTimeout(showCurrentWord, 1000);
-    } else {
-      resultElement.textContent = `Все слова пройдены! Правильных ответов: ${correctCount} из ${finnishRussianWords.length}`;
-      resultElement.style.color = "blue";
-      wordElement.textContent = "";
-    }
-
+    setTimeout(showCurrentWord, 800);
     return;
   }
 
-  if (hasCloseMatch(userAnswer, finnishRussianWords[currentIndex].russian)) {
-    resultElement.textContent = "верно";
-    resultElement.style.color = "green";
-    correctCount++;
-    counterElement.textContent = `${correctCount} / ${finnishRussianWords.length}`;
-    currentIndex++;
-
-    if (currentIndex < finnishRussianWords.length) {
-      setTimeout(showCurrentWord, 1000);
-    } else {
-      resultElement.textContent = `Все слова пройдены! Правильных ответов: ${correctCount} из ${finnishRussianWords.length}`;
-      resultElement.style.color = "blue";
-      wordElement.textContent = "";
-    }
-
-    return;
-  }
-
-  if (hasTypo(userAnswer, finnishRussianWords[currentIndex].russian)) {
+  if (hasTypo(userAnswer, correctAnswers)) {
     attempts--;
     if (attempts > 0) {
-      resultElement.textContent = `написано не верно. Осталось попыток: ${attempts}`;
-      resultElement.style.color = "red";
+      resultElement.textContent = `опечатка. Осталось попыток: ${attempts}`;
+      resultElement.style.color = "orange";
       return;
     }
-    wrongCount++;
-    wrongCountElement.textContent = wrongCount;
-    resultElement.textContent = "написано не верно. Слово не засчитано.";
-    historyElement.innerHTML = `<div class="history-item"><div>прошлый вопрос: ${finnishRussianWords[currentIndex].finnish}</div><div>а правильный ответ: ${finnishRussianWords[currentIndex].russian.join(', ')}</div></div>`;
-    resultElement.style.color = "red";
-    canSubmit = false;
-    currentIndex++;
-
-    if (currentIndex < finnishRussianWords.length) {
-      setTimeout(showCurrentWord, 2000);
-    } else {
-      resultElement.textContent = `Все слова пройдены! Правильных ответов: ${correctCount} из ${finnishRussianWords.length}`;
-      resultElement.style.color = "blue";
-      wordElement.textContent = "";
-    }
-    return;
+  } else {
+    attempts--;
   }
 
-  attempts--;
   if (attempts > 0) {
-    resultElement.textContent = `не верно. Осталось попыток: ${attempts}`;
+    resultElement.textContent = `неверно. Осталось попыток: ${attempts}`;
     resultElement.style.color = "red";
   } else {
     wrongCount++;
     wrongCountElement.textContent = wrongCount;
-    resultElement.textContent = "не верно. Слово не засчитано.";
-    historyElement.innerHTML = `<div class="history-item"><div>прошлый вопрос: ${finnishRussianWords[currentIndex].finnish}</div><div>а правильный ответ: ${finnishRussianWords[currentIndex].russian.join(', ')}</div></div>`;
-    resultElement.style.color = "red";
-    canSubmit = false;
-    currentIndex++;
 
-    if (currentIndex < finnishRussianWords.length) {
-      setTimeout(showCurrentWord, 2000);
-    } else {
-      resultElement.textContent = `Все слова пройдены! Правильных ответов: ${correctCount} из ${finnishRussianWords.length}`;
-      resultElement.style.color = "blue";
-      wordElement.textContent = "";
-    }
+    resultElement.textContent = "неверно";
+    historyElement.innerHTML = `
+      <div>
+        слово: ${currentWord.finnish}<br>
+        ответ: ${correctAnswers.join(", ")}
+      </div>
+    `;
+
+    setTimeout(showCurrentWord, 1500);
   }
 });
